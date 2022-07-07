@@ -1,30 +1,91 @@
-# This file configures the static analysis results for your project (errors,
-# warnings, and lints).
-#
-# This enables the 'recommended' set of lints from `package:lints`.
-# This set helps identify many issues that may lead to problems when running
-# or consuming Dart code, and enforces writing Dart using a single, idiomatic
-# style and format.
-#
-# If you want a smaller set of lints you can change this to specify
-# 'package:lints/core.yaml'. These are just the most critical lints
-# (the recommended set includes the core lints).
-# The core lints are also what is used by pub.dev for scoring packages.
+include: package:flutter_lints/flutter.yaml
 
-include: package:lints/recommended.yaml
+analyzer:
+  plugins:
+    - dart_code_metrics
 
-# Uncomment the following section to specify additional rules.
+  exclude: [lib/generated/**,lib/generated_plugin_registrant.dart,lib/app/modules/**/*.g.dart,"**/*.config.dart"]
 
-# linter:
-#   rules:
-#     - camel_case_types
+  errors:
+    prefer_relative_imports: warning
+    constant_identifier_names: warning
+    non_constant_identifier_names: warning
+    unused_import: warning
+    avoid_redundant_argument_values: warning
+    require_trailing_commas: warning
+    always_put_required_named_parameters_first: warning
+    prefer_single_quotes: warning
 
-# analyzer:
-#   exclude:
-#     - path/to/excluded/files/**
+linter:
+  rules:
+    avoid_print: true
+    always_declare_return_types: true
+    always_put_control_body_on_new_line: true
+    cascade_invocations: true
+    prefer_const_constructors: true
+    prefer_relative_imports: true
+    prefer_single_quotes: true
+    prefer_conditional_assignment: true
+    prefer_const_declarations: true
+    avoid_redundant_argument_values: true
+    avoid_types_on_closure_parameters: true
+    require_trailing_commas: true
+    always_put_required_named_parameters_first: true
+    overridden_fields: false
+    unawaited_futures: false
+    eol_at_end_of_file: true
+    join_return_with_assignment: true
+    prefer_final_in_for_each: true
 
-# For more information about the core and recommended set of lints, see
-# https://dart.dev/go/core-lints
+dart_code_metrics:
+  anti-patterns:
+    - long-method
+    - long-parameter-list
 
-# For additional information about configuring this file, see
-# https://dart.dev/guides/language/analysis-options
+  metrics:
+    cyclomatic-complexity: 20
+    maximum-nesting-level: 5
+    number-of-parameters: 6
+    source-lines-of-code: 50
+    halstead-volume: 150
+    lines-of-code: 50
+    number-of-methods: 5
+    weight-of-class: 0.33
+    technical-debt:
+      threshold: 1
+      todo-cost: 161
+      ignore-cost: 320
+      ignore-for-file-cost: 396
+      as-dynamic-cost: 322
+      deprecated-annotations-cost: 37
+      file-nullsafety-migration-cost: 41
+      unit-type: "BRL"
+
+  metrics-exclude:
+    - test/**
+
+  rules:
+    - avoid-collection-methods-with-unrelated-types
+    - avoid-global-state
+    - avoid-nested-conditional-expressions
+    - avoid-throw-in-catch-block
+    - avoid-unnecessary-type-casts
+    - avoid-unused-parameters
+    - avoid-border-all
+    - avoid-returning-widgets
+    - no-boolean-literal-compare
+    - no-empty-block
+    - no-equal-then-else
+    - prefer-conditional-expressions
+    - prefer-trailing-comma
+    - prefer-first
+    - prefer-conditional-expressions
+    - prefer-const-border-radius
+    - prefer-immediate-return
+    - prefer-async-await
+    - prefer-extracting-callbacks
+    - prefer-async-await
+    - always-remove-listener
+    - binary-expression-operand-order
+    - newline-before-return
+    - double-literal-format

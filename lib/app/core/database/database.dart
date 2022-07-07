@@ -1,17 +1,32 @@
-import 'package:dotenv/dotenv.dart';
+import 'dart:io';
+
 import 'package:mysql1/mysql1.dart';
+
+import '../../config/app_config.dart';
 
 class Database {
   Future<MySqlConnection> openConnection() async {
-    return MySqlConnection.connect(
+    final connection = await MySqlConnection.connect(
       ConnectionSettings(
-        host: env['DATABASE_HOST'] ?? env['databaseHost'] ?? '',
-        port: int.tryParse(env['DATABASE_PORT'] ?? env['databasePort'] ?? '') ??
+        host: AppConfig.env['DATABASE_HOST'] ??
+            AppConfig.env['databaseHost'] ??
+            '',
+        port: int.tryParse(
+              AppConfig.env['DATABASE_PORT'] ??
+                  AppConfig.env['databasePort'] ??
+                  '',
+            ) ??
             3306,
-        user: env['DATABASE_USER'] ?? env['databaseUser'],
-        password: env['DATABASE_PASSWORD'] ?? env['databasePassword'],
-        db: env['DATABASE_NAME'] ?? env['databaseName'],
+        user: AppConfig.env['DATABASE_USER'] ?? AppConfig.env['databaseUser'],
+        password: AppConfig.env['DATABASE_PASSWORD'] ??
+            AppConfig.env['databasePassword'],
+        db: AppConfig.env['DATABASE_NAME'] ?? AppConfig.env['databaseName'],
       ),
     );
+    if (Platform.isWindows) {
+      await Future.delayed(const Duration(milliseconds: 10));
+    }
+
+    return connection;
   }
 }

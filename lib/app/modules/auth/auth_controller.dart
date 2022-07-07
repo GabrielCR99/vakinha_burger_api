@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
-import 'package:vakinha_burger_api/app/core/exceptions/email_already_registered.dart';
-import 'package:vakinha_burger_api/app/core/exceptions/user_not_found_exceptino.dart';
-import 'package:vakinha_burger_api/app/entities/user.dart';
-import 'package:vakinha_burger_api/app/repositories/user_repository.dart';
+
+import '../../core/exceptions/email_already_registered.dart';
+import '../../core/exceptions/user_not_found_exception.dart';
+import '../../entities/user.dart';
+import '../../repositories/user_repository.dart';
 
 part 'auth_controller.g.dart';
 
@@ -17,17 +19,19 @@ class AuthController {
     final jsonRequest = jsonDecode(await request.readAsString());
     try {
       final user = await _userRepository.login(
-          jsonRequest['email'], jsonRequest['password']);
+        jsonRequest['email'],
+        jsonRequest['password'],
+      );
 
-      return Response.ok(user.toJson(), headers: {
-        'content-type': 'application/json',
-      });
-    } on UserNotFoundExceptino catch (e, s) {
-      print(e);
-      print(s);
-      return Response(403, headers: {
-        'content-type': 'application/json',
-      });
+      return Response.ok(
+        user.toJson(),
+        headers: {'content-type': 'application/json'},
+      );
+    } on UserNotFoundException {
+      return Response.forbidden(
+        jsonEncode({'message': 'User not found!'}),
+        headers: {'content-type': 'application/json'},
+      );
     } catch (e) {
       return Response.internalServerError();
     }
@@ -39,22 +43,16 @@ class AuthController {
       final userRq = User.fromJson(await request.readAsString());
       await _userRepository.save(userRq);
 
-      return Response(200, headers: {
-        'content-type': 'application/json',
-      });
-    } on EmailAlreadyRegistered catch (e, s) {
-      print(e);
-      print(s);
-      return Response(400,
-          body: jsonEncode(
-            {'error': 'E-mail já utilizado por outro usuário'},
-          ),
-          headers: {
-            'content-type': 'application/json',
-          });
-    } catch (e, s) {
-      print(e);
-      print(s);
+      return Response.ok(
+        jsonEncode({'message': 'User registered!'}),
+        headers: {'content-type': 'application/json'},
+      );
+    } on EmailAlreadyRegistered {
+      return Response.badRequest(
+        body: jsonEncode({'error': 'E-mail já utilizado por outro usuário'}),
+        headers: {'content-type': 'application/json'},
+      );
+    } catch (_) {
       return Response.internalServerError();
     }
   }

@@ -1,1 +1,0 @@
-class UserNotFoundExceptino implements Exception {}

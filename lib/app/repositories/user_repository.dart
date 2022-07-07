@@ -1,8 +1,9 @@
 import 'package:mysql1/mysql1.dart';
-import 'package:vakinha_burger_api/app/core/exceptions/email_already_registered.dart';
-import 'package:vakinha_burger_api/app/core/exceptions/user_not_found_exceptino.dart';
-import 'package:vakinha_burger_api/app/core/helpers/crypt_helper.dart';
+
 import '../core/database/database.dart';
+import '../core/exceptions/email_already_registered.dart';
+import '../core/exceptions/user_not_found_exception.dart';
+import '../core/helpers/crypt_helper.dart';
 import '../entities/user.dart';
 
 class UserRepository {
@@ -11,15 +12,13 @@ class UserRepository {
     try {
       conn = await Database().openConnection();
 
-      await Future.delayed(const Duration(milliseconds: 1));
-
       final result = await conn.query(
         ''' SELECT * FROM usuario WHERE email = ? AND senha = ?  ''',
-        [email, CryptHelper.generatedSha256Hash(password)],
+        [email, CryptHelper.generateSha256Hash(password)],
       );
 
       if (result.isEmpty) {
-        throw UserNotFoundExceptino();
+        throw UserNotFoundException();
       }
 
       final userData = result.first;
@@ -31,9 +30,7 @@ class UserRepository {
         password: '',
       );
     } on MySqlException catch (e, s) {
-      print(e);
-      print(s);
-      throw Exception('Erro ao realizar login');
+      Error.throwWithStackTrace(Exception('Erro ao realizar login'), s);
     } finally {
       await conn?.close();
     }
@@ -44,28 +41,54 @@ class UserRepository {
     try {
       conn = await Database().openConnection();
 
-      await Future.delayed(const Duration(seconds: 1));
-
-      final isUserRegiser = await conn
+      final userRegistered = await conn
           .query('select * from usuario where email = ? ', [user.email]);
 
-      if (isUserRegiser.isEmpty) {
-        await conn.query(''' 
-          insert into usuario
-          values(?,?,?,?)
-        ''', [
-          null,
-          user.name,
-          user.email,
-          CryptHelper.generatedSha256Hash(user.password)
-        ]);
+      if (userRegistered.isEmpty) {
+        await conn.query(
+          ''' 
+          INSERT INTO usuario
+          VALUES(?,?,?,?)
+        ''',
+          [
+            null,
+            user.name,
+            user.email,
+            CryptHelper.generateSha256Hash(user.password),
+          ],
+        );
       } else {
         throw EmailAlreadyRegistered();
       }
     } on MySqlException catch (e, s) {
-      print(e);
-      print(s);
-      throw Exception();
+      Error.throwWithStackTrace(Exception(), s);
+    } finally {
+      await conn?.close();
+    }
+  }
+
+  Future<User> findById(int id) async {
+    MySqlConnection? conn;
+    try {
+      conn = await Database().openConnection();
+
+      final result =
+          await conn.query('SELECT * FROM usuario WHERE id = ?', [id]);
+
+      if (result.isEmpty) {
+        throw UserNotFoundException();
+      }
+
+      final userData = result.first;
+
+      return User(
+        id: userData['id'],
+        name: userData['nome'],
+        email: userData['email'],
+        password: '',
+      );
+    } on MySqlException catch (e, s) {
+      Error.throwWithStackTrace(Exception('Erro ao buscar usuario'), s);
     } finally {
       await conn?.close();
     }

@@ -5,11 +5,12 @@ class User {
   final String name;
   final String email;
   final String password;
-  User({
-    this.id,
+
+  const User({
     required this.name,
     required this.email,
     required this.password,
+    this.id,
   });
 
   Map<String, dynamic> toMap() {
