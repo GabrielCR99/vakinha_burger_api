@@ -33,7 +33,7 @@ class OrderService {
     final billing = await _gerenciaNetPix.generateBillign(
       value: totalValue,
       orderId: orderId,
-      cpf: order.cpf,
+      cpf: order.cpf?.replaceAll('.', '').replaceAll('-', ''),
       name: user.name,
     );
 
