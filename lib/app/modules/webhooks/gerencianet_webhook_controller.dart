@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
 
+import '../../core/gerencianet/pix/gerencianet_pix.dart';
 import '../../services/order_service.dart';
 import 'view_models/gerencianet_callback_view_model.dart';
 
@@ -16,6 +18,16 @@ class GerencianetWebhookController {
   Future<Response> webhookConfig(Request _) async {
     return Response(
       HttpStatus.ok,
+      headers: {'content-type': 'application/json'},
+    );
+  }
+
+  @Route.put('/register')
+  Future<Response> register(Request _) async {
+    await GerencianetPix().registerWebhook();
+
+    return Response.ok(
+      jsonEncode({'status': 'ok'}),
       headers: {'content-type': 'application/json'},
     );
   }

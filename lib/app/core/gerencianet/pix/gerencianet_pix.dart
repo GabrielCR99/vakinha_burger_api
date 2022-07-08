@@ -64,4 +64,13 @@ class GerencianetPix {
       rethrow;
     }
   }
+
+  Future<void> registerWebhook() async {
+    final restClient = GerencianetRestClient();
+
+    await restClient.auth().put(
+      '/v2/webhook/${AppConfig.env['gerencianetChavePix']}',
+      data: {'webhookUrl': '${AppConfig.env['gerencianetWebhookUrl']}'},
+    );
+  }
 }
