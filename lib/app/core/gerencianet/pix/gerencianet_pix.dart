@@ -8,7 +8,7 @@ import 'models/billing_gerencianet_model.dart';
 import 'models/qr_code_gerencianet_model.dart';
 
 class GerencianetPix {
-  Future<BillingGerencianetModel> generateBillign({
+  Future<BillingGerencianetModel> generateBilling({
     required double value,
     required int orderId,
     String? cpf,
@@ -39,6 +39,7 @@ class GerencianetPix {
       return BillingGerencianetModel(
         transactionId: data['txid'],
         locationId: data['loc']['id'],
+        totalValue: data['valor']['original'],
       );
     } on DioError catch (e) {
       log('Erro ao gerar cobrança: $e');
@@ -46,7 +47,10 @@ class GerencianetPix {
     }
   }
 
-  Future<QrCodeGerencianetModel> getQrCode(int locationId) async {
+  Future<QrCodeGerencianetModel> getQrCode(
+    int locationId,
+    double totalValue,
+  ) async {
     try {
       final restClient = GerencianetRestClient();
 
@@ -58,6 +62,7 @@ class GerencianetPix {
       return QrCodeGerencianetModel(
         code: data['qrcode'],
         image: data['imagemQrcode'],
+        totalValue: totalValue,
       );
     } on DioError catch (e) {
       log('Erro ao gerar código QR: $e');

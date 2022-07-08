@@ -3,16 +3,19 @@ import 'dart:convert';
 class QrCodeGerencianetModel {
   final String image;
   final String code;
+  final double totalValue;
 
   const QrCodeGerencianetModel({
     required this.image,
     required this.code,
+    required this.totalValue,
   });
 
   Map<String, dynamic> toMap() {
     return {
       'image': image,
       'code': code,
+      'totalValue': totalValue,
     };
   }
 
@@ -20,6 +23,7 @@ class QrCodeGerencianetModel {
     return QrCodeGerencianetModel(
       image: map['image'] ?? '',
       code: map['code'] ?? '',
+      totalValue: map['totalValue']?.toDouble() ?? 0.0,
     );
   }
 

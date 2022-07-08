@@ -30,7 +30,7 @@ class OrderService {
       totalValue += product.price * item.amount;
     }
 
-    final billing = await _gerenciaNetPix.generateBillign(
+    final billing = await _gerenciaNetPix.generateBilling(
       value: totalValue,
       orderId: orderId,
       cpf: order.cpf?.replaceAll('.', '').replaceAll('-', ''),
@@ -39,7 +39,7 @@ class OrderService {
 
     await _repository.updateTransactionId(orderId, billing.transactionId);
 
-    return await _gerenciaNetPix.getQrCode(billing.locationId);
+    return await _gerenciaNetPix.getQrCode(billing.locationId, totalValue);
   }
 
   Future<void> confirmPayment(Iterable<String> transactions) async {
