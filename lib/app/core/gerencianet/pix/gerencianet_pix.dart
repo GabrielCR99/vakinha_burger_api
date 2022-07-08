@@ -39,7 +39,7 @@ class GerencianetPix {
       return BillingGerencianetModel(
         transactionId: data['txid'],
         locationId: data['loc']['id'],
-        totalValue: data['valor']['original'],
+        totalValue: double.parse(data['valor']['original']),
       );
     } on DioError catch (e) {
       log('Erro ao gerar cobrança: $e');
