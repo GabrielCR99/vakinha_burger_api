@@ -8,6 +8,10 @@ part of 'order_controller.dart';
 
 Router _$OrderControllerRouter(OrderController service) {
   final router = Router();
-  router.add('POST', r'/', service.register);
+  router.add(
+    'POST',
+    r'/',
+    service.register,
+  );
   return router;
 }
